@@ -4,7 +4,7 @@ import './index.css';
 
 class Box extends React.Component {
   selectBox = () => {
-    this.props.selectBox(this.props.row, this.props.col)
+    this.props.selectBox(this.props.row, this.props.col);
   }
 
   render () {
@@ -20,7 +20,7 @@ class Box extends React.Component {
 
 class Grid extends React.Component {
   render() {
-    const width = this.props.cols * 14;
+    const width = (this.props.cols * 16);
     var rowsArr = []
 
     var boxClass = "";
@@ -44,7 +44,7 @@ class Grid extends React.Component {
 
     return (
       <div className="grid" style={{width: width}}>
-        {{rowsArr}}
+        {rowsArr}
       </div>
     );
   }
@@ -63,6 +63,49 @@ class Main extends React.Component {
     }
   }
 
+  selectBox = (row, col) => {
+    let gridCopy = arrayClone(this.state.gridFull);
+    gridCopy[row][col] = !gridCopy[row][col];
+    this.setState({
+      gridFull: gridCopy
+    });
+  }
+
+  seed = () => {
+    console.log("SEED");
+    let gridCopy = arrayClone(this.state.gridFull);
+    for (let i = 0; i < this.rows; i++){
+      for (let j = 0; j < this.cols; j++) {
+        if (Math.floor(Math.random() * 4) === 1){
+          gridCopy[i][j] = true;
+        }
+      }
+    }
+    this.setState({
+      gridFull: gridCopy
+    });
+  }
+
+  playButton = () => {
+    clearInterval(this.intervalId);
+    this.intervalId = setInterval(this.play, this.speed);
+  }
+
+  play = () => {
+    let g = this.state.gridFull;
+    let g2 = arrayClone(this.state.gridFull);
+
+
+    this.setState({
+      gridFull: g2,
+      generation: this.state.generation + 1
+    })
+  }
+
+  componentDidMount() {
+    this.seed();
+  }
+
   render() {
     return (
       <div>
@@ -77,6 +120,10 @@ class Main extends React.Component {
       </div>
     );
   }
+}
+
+function arrayClone(arr) {
+  return JSON.parse(JSON.stringify(arr)); //deepclone trick
 }
 
 ReactDOM.render(<Main/>, document.getElementById('root'));
